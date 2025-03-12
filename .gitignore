@@ -9,3 +9,6 @@ vgmstream/
 wwiser.pyz
 wwnames.db3
 /dependencies
+app.spec
+/build
+/dist
