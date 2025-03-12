@@ -35,18 +35,67 @@ class Worker(QObject):
 
     @pyqtSlot()
     def run(self):
-        # Use fixed paths for dependencies based on the current working directory
+        # Fixed paths based on the current working directory
         wwiser_pyz = self.settings.get("wwiser_pyz", "")
         folder_vgmstream = self.settings.get("folder_vgmstream", "")
         folder_unpacked_data = self.settings.get("folder_unpacked_data", "")
         folder_audio_converted = self.settings.get("folder_audio_converted", "")
         wiki_json_path = self.settings.get("folder_bg3sids_wiki", "")
+        folder_banks_converted = self.settings.get("folder_banks_converted", os.path.join(os.getcwd(), "ConvertedBanks"))
         
         should_convert = self.settings.get("should_convert", False)
         should_decode_banks = self.settings.get("should_decode_banks", False)
         should_group = self.settings.get("should_group", False)
         should_rename = self.settings.get("should_rename", False)
         
+        # Create the output folders immediately.
+        os.makedirs(folder_banks_converted, exist_ok=True)
+        os.makedirs(folder_audio_converted, exist_ok=True)
+        
+        # For banks, we have two categories.
+        folder_banks_converted_shared = os.path.join(folder_banks_converted, "Shared")
+        folder_banks_converted_shared_dev = os.path.join(folder_banks_converted, "SharedDev")
+        os.makedirs(folder_banks_converted_shared, exist_ok=True)
+        os.makedirs(folder_banks_converted_shared_dev, exist_ok=True)
+        
+        # Define source folders
+        src_sound = os.path.join(folder_unpacked_data, "SharedSounds", "Public", "Shared", "Assets", "Sound")
+        src_sound_dev = os.path.join(folder_unpacked_data, "SharedSounds", "Public", "SharedDev", "Assets", "Sound")
+        src_banks = os.path.join(folder_unpacked_data, "SharedSoundBanks", "Public", "Shared", "Assets", "Sound")
+        src_banks_dev = os.path.join(folder_unpacked_data, "SharedSoundBanks", "Public", "SharedDev", "Assets", "Sound")
+        
+        dest_sound = os.path.join(folder_audio_converted, "Shared")
+        dest_sound_dev = os.path.join(folder_audio_converted, "SharedDev")
+        
+        # Create directories if they don't exist
+        os.makedirs(src_sound, exist_ok=True)
+        os.makedirs(src_sound_dev, exist_ok=True)
+        os.makedirs(src_banks, exist_ok=True)
+        os.makedirs(src_banks_dev, exist_ok=True)
+        os.makedirs(dest_sound, exist_ok=True)
+        os.makedirs(dest_sound_dev, exist_ok=True)
+        
+        # --- Decode banks immediately, creating a bank folder per file ---
+        def decode_banks(source_dir: str, target_folder: str):
+            banks = glob.glob(os.path.join(source_dir, "*.bnk"))
+            total = len(banks)
+            bank_index = 0
+            self.progress.emit(f"Decoding {total} banks in {source_dir}")
+            for bank in banks:
+                bank_name = os.path.basename(bank)[:-4]  # remove .bnk extension
+                bank_folder = os.path.join(target_folder, bank_name)
+                os.makedirs(bank_folder, exist_ok=True)  # create the bank folder immediately
+                cmd = f'python "{wwiser_pyz}" -d xsl "{bank}"'
+                subprocess.call(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                # Expected output file: bank_name.bnk.xml
+                xml_file = bank[:-4] + ".bnk.xml"
+                if os.path.exists(xml_file):
+                    shutil.move(xml_file, os.path.join(bank_folder, os.path.basename(xml_file)))
+                    self.progress.emit(f"Added XML for bank '{bank_name}'")
+                bank_index += 1
+                self.progress.emit(f"{bank_index}/{total} banks decoded in {source_dir}")
+        
+        # Convert .wem files using vgmstream-cli
         def convert_wem_folder(source_dir: str, dest_dir: str):
             cwd = os.getcwd()
             os.chdir(folder_vgmstream)
@@ -62,40 +111,29 @@ class Worker(QObject):
                 self.progress.emit(f"{wem_index}/{total} files converted in {source_dir}")
             os.chdir(cwd)
         
-        def decode_banks(source_dir: str):
-            banks = glob.glob(os.path.join(source_dir, "*.bnk"))
-            total = len(banks)
-            bank_index = 0
-            self.progress.emit(f"Decoding {total} banks in {source_dir}")
-            for bank in banks:
-                cmd = f'python "{wwiser_pyz}" -d xsl "{bank}"'
-                subprocess.call(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                bank_index += 1
-                self.progress.emit(f"{bank_index}/{total} banks decoded in {source_dir}")
-        
+        # Group files by bank by reading the XML files stored in bank folders.
         def create_banks_folders(banks_dir: str, sounds_dir: str):
-            banks_xmls = glob.glob(os.path.join(banks_dir, "*.bnk.xml"))
-            total = len(banks_xmls)
-            bank_folder_index = 0
-            self.progress.emit(f"Grouping {total} banks from {banks_dir}")
-            for bank_filename in banks_xmls:
-                bank_folder = os.path.basename(bank_filename).split(".")[0]
-                target_folder = os.path.join(sounds_dir, bank_folder)
-                if not os.path.exists(target_folder):
-                    os.makedirs(target_folder)
-                with open(bank_filename, "r") as bank_file_content:
-                    for line in bank_file_content:
-                        if 'name="sourceID"' in line:
-                            ids = line.split('"')[-2]
-                            filename = f"{ids}.wem.wav"
-                            if filename in os.listdir(sounds_dir):
-                                shutil.move(
-                                    os.path.join(sounds_dir, filename),
-                                    os.path.join(target_folder, filename),
-                                )
-                bank_folder_index += 1
-                self.progress.emit(f"{bank_folder_index}/{total} banks grouped in {banks_dir}")
+            # Walk through the banks_dir to find XML files inside each bank folder.
+            for root, dirs, files in os.walk(banks_dir):
+                for file in files:
+                    if file.endswith(".bnk.xml"):
+                        bank_name = os.path.basename(root)
+                        target_folder = os.path.join(sounds_dir, bank_name)
+                        os.makedirs(target_folder, exist_ok=True)
+                        xml_path = os.path.join(root, file)
+                        with open(xml_path, "r") as bank_file_content:
+                            for line in bank_file_content:
+                                if 'name="sourceID"' in line:
+                                    ids = line.split('"')[-2]
+                                    filename = f"{ids}.wem.wav"
+                                    if filename in os.listdir(sounds_dir):
+                                        shutil.move(
+                                            os.path.join(sounds_dir, filename),
+                                            os.path.join(target_folder, filename),
+                                        )
+                        self.progress.emit(f"Grouped files for bank '{bank_name}'")
         
+        # Rename files using the JSON mapping
         def rename_files(source: str):
             folders = glob.glob(os.path.join(source, "*/"))
             total = len(folders)
@@ -112,6 +150,7 @@ class Worker(QObject):
             for folder_path in folders:
                 folder_name = os.path.basename(os.path.normpath(folder_path))
                 mapping_key = None
+                # Find a JSON key that contains the folder name (case-insensitive)
                 for key in wiki_data:
                     if folder_name.upper() in key.upper():
                         mapping_key = key
@@ -146,53 +185,38 @@ class Worker(QObject):
                 rename_folder_index += 1
                 self.progress.emit(f"{rename_folder_index}/{total} folders processed for renaming")
         
-        # Define source and destination folders based on the unpacked data and output folder
-        src_sound = os.path.join(folder_unpacked_data, "SharedSounds", "Public", "Shared", "Assets", "Sound")
-        src_sound_dev = os.path.join(folder_unpacked_data, "SharedSounds", "Public", "SharedDev", "Assets", "Sound")
-        src_banks = os.path.join(folder_unpacked_data, "SharedSoundBanks", "Public", "Shared", "Assets", "Sound")
-        src_banks_dev = os.path.join(folder_unpacked_data, "SharedSoundBanks", "Public", "SharedDev", "Assets", "Sound")
-        
-        dest_sound = os.path.join(folder_audio_converted, "Shared")
-        dest_sound_dev = os.path.join(folder_audio_converted, "SharedDev")
-        
-        # Create directories if they don't exist
-        os.makedirs(src_sound, exist_ok=True)
-        os.makedirs(src_sound_dev, exist_ok=True)
-        os.makedirs(src_banks, exist_ok=True)
-        os.makedirs(src_banks_dev, exist_ok=True)
-        os.makedirs(dest_sound, exist_ok=True)
-        os.makedirs(dest_sound_dev, exist_ok=True)
+        # --- Process banks first ---
+        if should_decode_banks:
+            self.progress.emit("Decoding sound banks")
+            self.progress.emit("  Processing Shared banks")
+            decode_banks(src_banks, folder_banks_converted_shared)
+            self.progress.emit("  Processing SharedDev banks")
+            decode_banks(src_banks_dev, folder_banks_converted_shared_dev)
         
         if should_convert:
             self.progress.emit("Converting sound files")
-            self.progress.emit("  Processing Shared")
+            self.progress.emit("  Processing Shared audio")
             convert_wem_folder(src_sound, dest_sound)
-            self.progress.emit("  Processing SharedDev")
+            self.progress.emit("  Processing SharedDev audio")
             convert_wem_folder(src_sound_dev, dest_sound_dev)
-            
-        if should_decode_banks:
-            self.progress.emit("Decoding sound banks")
-            self.progress.emit("  Processing Shared")
-            decode_banks(src_banks)
-            self.progress.emit("  Processing SharedDev")
-            decode_banks(src_banks_dev)
             
         if should_group:
             self.progress.emit("Grouping files by bank")
-            self.progress.emit("  Processing Shared")
-            create_banks_folders(src_banks, dest_sound)
-            self.progress.emit("  Processing SharedDev")
-            create_banks_folders(src_banks_dev, dest_sound_dev)
+            self.progress.emit("  Grouping Shared audio")
+            create_banks_folders(folder_banks_converted_shared, dest_sound)
+            self.progress.emit("  Grouping SharedDev audio")
+            create_banks_folders(folder_banks_converted_shared_dev, dest_sound_dev)
             
         if should_rename:
             self.progress.emit("Renaming files")
-            self.progress.emit("  Processing Shared")
+            self.progress.emit("  Renaming Shared audio")
             rename_files(dest_sound)
-            self.progress.emit("  Processing SharedDev")
+            self.progress.emit("  Renaming SharedDev audio")
             rename_files(dest_sound_dev)
         
         self.progress.emit("Done")
         self.finished.emit()
+
 
 # Worker for downloading dependencies and extracting zip files
 class DownloadWorker(QObject):
@@ -236,7 +260,7 @@ class DownloadWorker(QObject):
                         self.progress.emit(f"Error extracting {file_name}: {e}")
         self.finished.emit()
 
-# Main GUI Window with only one user-input field: UnpackedData
+# Main GUI Window with a single user-input field: UnpackedData
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -301,12 +325,14 @@ class MainWindow(QMainWindow):
         self.progress_bar.setVisible(True)
         self.log_text.clear()
         
-        # Build settings using fixed paths relative to the current working directory
+        # Build settings using fixed paths relative to the current working directory.
+        # The ConvertedBanks folder is defined here and created before ConvertedAudio.
         settings = {
             "folder_unpacked_data": self.unpacked_data_edit.text(),
             "wwiser_pyz": os.path.join(os.getcwd(), "dependencies", "wwiser.pyz"),
             "folder_vgmstream": os.path.join(os.getcwd(), "dependencies", "vgmstream-win64"),
             "folder_audio_converted": os.path.join(os.getcwd(), "ConvertedAudio"),
+            "folder_banks_converted": os.path.join(os.getcwd(), "ConvertedBanks"),
             "folder_bg3sids_wiki": os.path.join(os.getcwd(), "wiki_data.json"),
             "should_convert": self.convert_checkbox.isChecked(),
             "should_decode_banks": self.decode_checkbox.isChecked(),
