@@ -23,6 +23,8 @@ from PyQt6.QtWidgets import (
     QProgressBar,
 )
 from PyQt6.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QIcon, QFont
+import qtawesome as qta
 
 # Worker for processing audio files
 class Worker(QObject):
@@ -32,9 +34,16 @@ class Worker(QObject):
     def __init__(self, settings):
         super().__init__()
         self.settings = settings
+        self._is_running = True
+
+    def stop(self):
+        self._is_running = False
 
     @pyqtSlot()
     def run(self):
+        # (Reset cancellation flag)
+        self._is_running = True
+
         # Fixed paths based on the current working directory
         wwiser_pyz = self.settings.get("wwiser_pyz", "")
         folder_vgmstream = self.settings.get("folder_vgmstream", "")
@@ -82,6 +91,9 @@ class Worker(QObject):
             bank_index = 0
             self.progress.emit(f"Decoding {total} banks in {source_dir}")
             for bank in banks:
+                if not self._is_running:
+                    self.progress.emit("Decoding cancelled.")
+                    return
                 bank_name = os.path.basename(bank)[:-4]  # remove .bnk extension
                 bank_folder = os.path.join(target_folder, bank_name)
                 os.makedirs(bank_folder, exist_ok=True)  # create the bank folder immediately
@@ -104,6 +116,9 @@ class Worker(QObject):
             wem_index = 0
             self.progress.emit(f"Converting {total} files from {source_dir}")
             for wem in wems:
+                if not self._is_running:
+                    self.progress.emit("Conversion cancelled.")
+                    break
                 _, filename = os.path.split(wem)
                 cmd = f'vgmstream-cli -o "{os.path.join(dest_dir, filename + ".wav")}" "{wem}"'
                 subprocess.call(cmd, shell=True, stdout=subprocess.DEVNULL)
@@ -113,8 +128,10 @@ class Worker(QObject):
         
         # Group files by bank by reading the XML files stored in bank folders.
         def create_banks_folders(banks_dir: str, sounds_dir: str):
-            # Walk through the banks_dir to find XML files inside each bank folder.
             for root, dirs, files in os.walk(banks_dir):
+                if not self._is_running:
+                    self.progress.emit("Grouping cancelled.")
+                    return
                 for file in files:
                     if file.endswith(".bnk.xml"):
                         bank_name = os.path.basename(root)
@@ -135,6 +152,9 @@ class Worker(QObject):
         
         # Rename files using the JSON mapping
         def rename_files(source: str):
+            if not os.path.exists(wiki_json_path):
+                self.progress.emit("wiki_data.json is missing. Skipping renaming.")
+                return
             folders = glob.glob(os.path.join(source, "*/"))
             total = len(folders)
             rename_folder_index = 0
@@ -148,9 +168,11 @@ class Worker(QObject):
                 return
 
             for folder_path in folders:
+                if not self._is_running:
+                    self.progress.emit("Renaming cancelled.")
+                    return
                 folder_name = os.path.basename(os.path.normpath(folder_path))
                 mapping_key = None
-                # Find a JSON key that contains the folder name (case-insensitive)
                 for key in wiki_data:
                     if folder_name.upper() in key.upper():
                         mapping_key = key
@@ -227,11 +249,19 @@ class DownloadWorker(QObject):
         super().__init__()
         self.dependencies = dependencies
         self.download_folder = download_folder
-    
+        self._is_running = True
+
+    def stop(self):
+        self._is_running = False
+
     @pyqtSlot()
     def run(self):
         os.makedirs(self.download_folder, exist_ok=True)
         for url in self.dependencies:
+            if not self._is_running:
+                self.progress.emit("Download cancelled.")
+                self.finished.emit()
+                return
             file_name = url.split("/")[-1]
             destination = os.path.join(self.download_folder, file_name)
             if os.path.exists(destination):
@@ -244,6 +274,10 @@ class DownloadWorker(QObject):
                 except Exception as e:
                     self.progress.emit(f"Error downloading {file_name}: {e}")
         for url in self.dependencies:
+            if not self._is_running:
+                self.progress.emit("Extraction cancelled.")
+                self.finished.emit()
+                return
             file_name = url.split("/")[-1]
             if file_name.lower().endswith('.zip'):
                 zip_path = os.path.join(self.download_folder, file_name)
@@ -289,10 +323,18 @@ class MainWindow(QMainWindow):
         
         btn_layout = QHBoxLayout()
         self.start_button = QPushButton("Start Processing")
+        self.start_button.setIcon(qta.icon('fa5s.play', color='#4CAF50'))
         self.start_button.clicked.connect(self.start_processing)
         btn_layout.addWidget(self.start_button)
         
+        self.stop_button = QPushButton("Stop")
+        self.stop_button.setIcon(qta.icon('fa5s.stop', color='#F44336'))
+        self.stop_button.setEnabled(False)
+        self.stop_button.clicked.connect(self.stop_processing)
+        btn_layout.addWidget(self.stop_button)
+        
         self.download_button = QPushButton("Download Dependencies")
+        self.download_button.setIcon(qta.icon('fa5s.download', color='#2196F3'))
         self.download_button.clicked.connect(self.download_dependencies)
         btn_layout.addWidget(self.download_button)
         
@@ -300,17 +342,24 @@ class MainWindow(QMainWindow):
         
         self.log_text = QTextEdit()
         self.log_text.setReadOnly(True)
+        # Set a monospaced font for the log for better readability
+        self.log_text.setFont(QFont("Consolas", 10))
         layout.addWidget(self.log_text)
         
         self.progress_bar = QProgressBar()
+        # Initially an indefinite progress bar
         self.progress_bar.setRange(0, 0)
         self.progress_bar.setVisible(False)
         layout.addWidget(self.progress_bar)
+
+        # Check for required dependencies and files, disable checkboxes if missing
+        self.check_dependencies()
         
     def add_browse_button(self, form_layout, label, line_edit):
         h_layout = QHBoxLayout()
         h_layout.addWidget(line_edit)
         browse_button = QPushButton("Browse")
+        browse_button.setIcon(qta.icon('fa5s.folder-open', color='#FF9800'))
         browse_button.clicked.connect(lambda: self.browse_folder(line_edit))
         h_layout.addWidget(browse_button)
         form_layout.addRow(label, h_layout)
@@ -320,13 +369,39 @@ class MainWindow(QMainWindow):
         if folder:
             line_edit.setText(folder)
         
+    def check_dependencies(self):
+        # Check for decoding dependency (wwiser.pyz)
+        wwiser_path = os.path.join(os.getcwd(), "dependencies", "wwiser.pyz")
+        if not os.path.exists(wwiser_path):
+            self.decode_checkbox.setEnabled(False)
+            self.group_checkbox.setEnabled(False)
+            self.decode_checkbox.setToolTip("Requires wwiser.pyz dependency")
+            self.group_checkbox.setToolTip("Requires wwiser.pyz dependency")
+        
+        # Check for wiki_data.json for renaming
+        wiki_path = os.path.join(os.getcwd(), "wiki_data.json")
+        if not os.path.exists(wiki_path):
+            self.rename_checkbox.setEnabled(False)
+            self.rename_checkbox.setToolTip("wiki_data.json not found")
+        
+        # Check if dependencies are already downloaded
+        dependencies = [
+            os.path.join(os.getcwd(), "dependencies", "wwiser.pyz"),
+            os.path.join(os.getcwd(), "dependencies", "vgmstream-win64.zip"),
+            os.path.join(os.getcwd(), "dependencies", "bg3-modders-multitool.zip"),
+            os.path.join(os.getcwd(), "dependencies", "wwnames.db3"),
+        ]
+        if all(os.path.exists(dep) for dep in dependencies):
+            self.download_button.setText("Dependencies already downloaded")
+            self.download_button.setEnabled(False)
+        
     def start_processing(self):
         self.start_button.setEnabled(False)
+        self.stop_button.setEnabled(True)
         self.progress_bar.setVisible(True)
         self.log_text.clear()
         
         # Build settings using fixed paths relative to the current working directory.
-        # The ConvertedBanks folder is defined here and created before ConvertedAudio.
         settings = {
             "folder_unpacked_data": self.unpacked_data_edit.text(),
             "wwiser_pyz": os.path.join(os.getcwd(), "dependencies", "wwiser.pyz"),
@@ -352,6 +427,12 @@ class MainWindow(QMainWindow):
         self.thread.finished.connect(self.thread.deleteLater)
         
         self.thread.start()
+        
+    def stop_processing(self):
+        if hasattr(self, "worker"):
+            self.worker.stop()
+            self.report_progress("Stop requested by user.")
+        self.stop_button.setEnabled(False)
         
     def download_dependencies(self):
         self.download_button.setEnabled(False)
@@ -387,6 +468,7 @@ class MainWindow(QMainWindow):
         self.log_text.append("Processing complete.")
         self.progress_bar.setVisible(False)
         self.start_button.setEnabled(True)
+        self.stop_button.setEnabled(False)
         
     @pyqtSlot()
     def download_finished(self):
@@ -395,6 +477,16 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication([])
+    # Apply a dark mode style sheet
+    app.setStyleSheet("""
+        QMainWindow { background-color: #2b2b2b; color: #f0f0f0; }
+        QWidget { background-color: #2b2b2b; color: #f0f0f0; }
+        QTextEdit { background-color: #353535; color: #f0f0f0; }
+        QLineEdit { background-color: #353535; color: #f0f0f0; }
+        QPushButton { background-color: #3c3c3c; color: #f0f0f0; border: 1px solid #555; }
+        QCheckBox { color: #f0f0f0; }
+        QProgressBar { background-color: #353535; color: #f0f0f0; border: 1px solid #555; text-align: center; }
+    """)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
