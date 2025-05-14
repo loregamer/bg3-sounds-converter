@@ -19,6 +19,7 @@ The tool builds upon [community research](https://github.com/HumansDoNotWantImmo
 
 - **User-friendly GUI** - Simple interface to configure and run the conversion process
 - **Automatic dependency management** - Downloads required tools and libraries with one click
+- **Path configuration storage** - Remembers file paths between sessions so you don't have to enter them repeatedly
 - **Sound file conversion** - Converts Wwise `.wem` files to standard `.wav` format
 - **Bank decoding** - Decodes Wwise `.bnk` files to XML for analysis
 - **File organization** - Groups audio files by source sound bank
@@ -64,12 +65,14 @@ The tool builds upon [community research](https://github.com/HumansDoNotWantImmo
 
 2. **Configure the Application**:
 
-   - Enter the path to your BG3 `UnpackedData` folder
+   - Enter the path to your BG3 `UnpackedData` folder (paths are remembered between sessions)
    - Select the operations you want to perform:
      - **Convert sound files**: Processes `.wem` files to `.wav`
      - **Decode banks**: Extracts information from `.bnk` files
      - **Group files by bank**: Organizes audio files into bank-specific folders
      - **Rename files**: Applies descriptive names from wiki data
+
+   > Note: File paths are automatically saved between sessions, so you won't need to browse for the same folders repeatedly. See [CONFIG_README.md](CONFIG_README.md) for more details.
 
 3. **Start Processing**:
    - Click **Start Processing** to begin
@@ -134,9 +137,27 @@ If sound conversion fails:
 
 - Ensure vgmstream was downloaded correctly
 - Check that your unpacked data path is correct
-- Verify that the source `.wem` files exist in the expected location
+- The application will now automatically search all subdirectories of your UnpackedData folder if files aren't found in the expected locations
+
+### File Discovery Improvements
+
+The tools now include recursive file search capability:
+
+- Automatically finds `.bnk` and `.wem` files even if they're not in the expected directory structure
+- Works with various unpacking methods and folder organizations
+- No need to reorganize unpacked files into a specific structure
 
 ## Technical Details
+
+### Configuration Manager
+
+The application now includes a path configuration manager that:
+
+- Automatically saves file paths between sessions
+- Remembers folder locations for your UnpackedData, output folders, and tool locations
+- Saves settings to a `bg3_sounds_config.json` file
+- Works with both the main app and the BG3 Sound Banks Dictionary Builder
+- For more details, see [CONFIG_README.md](CONFIG_README.md)
 
 ### File Format Information
 

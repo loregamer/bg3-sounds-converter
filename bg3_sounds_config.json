@@ -1,0 +1,10 @@
+{
+    "folder_unpacked_data": "G:/Modding/BG3/Tools/BG3-Modders-Multitool/UnpackedData",
+    "folder_vgmstream": "G:\\Modding\\_Github\\bg3-sounds-converter\\dependencies\\vgmstream-win64",
+    "folder_audio_converted": "G:\\Modding\\_Github\\bg3-sounds-converter\\ConvertedAudio",
+    "folder_banks_converted": "G:\\Modding\\_Github\\bg3-sounds-converter\\ConvertedBanks",
+    "folder_bg3sids_wiki": "G:\\Modding\\_Github\\bg3-sounds-converter\\wiki_data.json",
+    "wwiser_pyz": "G:\\Modding\\_Github\\bg3-sounds-converter\\dependencies\\wwiser.pyz",
+    "output_json": "G:\\Modding\\_Github\\bg3-sounds-converter\\output\\bg3_sounds.json",
+    "xml_output_folder": "G:/Modding/_Github/bg3-sounds-converter/output"
+}

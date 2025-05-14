@@ -7,6 +7,7 @@ import shutil
 import urllib.request
 import zipfile
 import json
+from config_manager import get_config, set_config, save_config, load_config
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -86,10 +87,28 @@ class Worker(QObject):
         
         # --- Decode banks immediately, creating a bank folder per file ---
         def decode_banks(source_dir: str, target_folder: str):
+            # First try direct path for .bnk files
             banks = glob.glob(os.path.join(source_dir, "*.bnk"))
+            
+            # If no banks found, try searching recursively from the unpacked_data folder
+            if len(banks) == 0:
+                self.progress.emit(f"No BNK files found in {source_dir}. Searching recursively...")
+                # Try searching in the entire folder structure
+                for root, _, files in os.walk(folder_unpacked_data):
+                    for file in files:
+                        if file.lower().endswith('.bnk'):
+                            banks.append(os.path.join(root, file))
+                
+                self.progress.emit(f"Found {len(banks)} BNK files in recursive search")
+            
             total = len(banks)
             bank_index = 0
-            self.progress.emit(f"Decoding {total} banks in {source_dir}")
+            
+            if total == 0:
+                self.progress.emit(f"No BNK files found in {source_dir} or recursive search")
+                return
+                
+            self.progress.emit(f"Decoding {total} banks")
             for bank in banks:
                 if not self._is_running:
                     self.progress.emit("Decoding cancelled.")
@@ -111,10 +130,39 @@ class Worker(QObject):
         def convert_wem_folder(source_dir: str, dest_dir: str):
             cwd = os.getcwd()
             os.chdir(folder_vgmstream)
+            
+            # First try direct path for .wem files
             wems = glob.glob(os.path.join(source_dir, "*.wem"))
+            
+            # If no wem files found, try searching recursively from the unpacked_data folder
+            if len(wems) == 0:
+                self.progress.emit(f"No WEM files found in {source_dir}. Searching recursively...")
+                
+                # Determine whether this is for Shared or SharedDev
+                is_shared = "Shared" in source_dir and "SharedDev" not in source_dir
+                is_shareddev = "SharedDev" in source_dir
+                
+                # Try searching in the entire folder structure
+                for root, _, files in os.walk(folder_unpacked_data):
+                    for file in files:
+                        if file.lower().endswith('.wem'):
+                            # Only include files in the right category
+                            if (is_shared and "SharedDev" not in root and "Shared" in root) or \
+                               (is_shareddev and "SharedDev" in root) or \
+                               (not is_shared and not is_shareddev):  # If not specific, include all
+                                wems.append(os.path.join(root, file))
+                
+                self.progress.emit(f"Found {len(wems)} WEM files in recursive search")
+            
             total = len(wems)
             wem_index = 0
-            self.progress.emit(f"Converting {total} files from {source_dir}")
+            
+            if total == 0:
+                self.progress.emit(f"No WEM files found in {source_dir} or recursive search")
+                os.chdir(cwd)
+                return
+                
+            self.progress.emit(f"Converting {total} files")
             for wem in wems:
                 if not self._is_running:
                     self.progress.emit("Conversion cancelled.")
@@ -300,6 +348,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("BG3 Sound Categoriser")
         
+        # Load saved configuration
+        load_config()
+        
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout()
@@ -309,6 +360,8 @@ class MainWindow(QMainWindow):
         layout.addLayout(form_layout)
         
         self.unpacked_data_edit = QLineEdit()
+        # Load the path from config
+        self.unpacked_data_edit.setText(get_config("folder_unpacked_data", ""))
         self.add_browse_button(form_layout, "Path to UnpackedData:", self.unpacked_data_edit)
         
         self.convert_checkbox = QCheckBox("Convert sound files")
@@ -368,6 +421,10 @@ class MainWindow(QMainWindow):
         folder = QFileDialog.getExistingDirectory(self, "Select Folder")
         if folder:
             line_edit.setText(folder)
+            # If this is the unpacked data path, save it to config
+            if line_edit == self.unpacked_data_edit:
+                set_config("folder_unpacked_data", folder)
+                save_config()
         
     def check_dependencies(self):
         # Check for decoding dependency (wwiser.pyz)
@@ -401,14 +458,18 @@ class MainWindow(QMainWindow):
         self.progress_bar.setVisible(True)
         self.log_text.clear()
         
-        # Build settings using fixed paths relative to the current working directory.
+        # Save the current unpacked data path to config
+        set_config("folder_unpacked_data", self.unpacked_data_edit.text())
+        save_config()
+        
+        # Build settings using the configuration manager
         settings = {
-            "folder_unpacked_data": self.unpacked_data_edit.text(),
-            "wwiser_pyz": os.path.join(os.getcwd(), "dependencies", "wwiser.pyz"),
-            "folder_vgmstream": os.path.join(os.getcwd(), "dependencies", "vgmstream-win64"),
-            "folder_audio_converted": os.path.join(os.getcwd(), "ConvertedAudio"),
-            "folder_banks_converted": os.path.join(os.getcwd(), "ConvertedBanks"),
-            "folder_bg3sids_wiki": os.path.join(os.getcwd(), "wiki_data.json"),
+            "folder_unpacked_data": get_config("folder_unpacked_data"),
+            "wwiser_pyz": get_config("wwiser_pyz"),
+            "folder_vgmstream": get_config("folder_vgmstream"),
+            "folder_audio_converted": get_config("folder_audio_converted"),
+            "folder_banks_converted": get_config("folder_banks_converted"),
+            "folder_bg3sids_wiki": get_config("folder_bg3sids_wiki"),
             "should_convert": self.convert_checkbox.isChecked(),
             "should_decode_banks": self.decode_checkbox.isChecked(),
             "should_group": self.group_checkbox.isChecked(),

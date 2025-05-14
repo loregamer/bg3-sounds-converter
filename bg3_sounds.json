@@ -1,0 +1,546 @@
+{
+  "Other": {
+    "SURFACES": {
+      "name": "SURFACES",
+      "sound_files": {}
+    },
+    "VOCALS": {
+      "name": "VOCALS",
+      "sound_files": {}
+    }
+  },
+  "Shared": {
+    "Init": {
+      "name": "Init",
+      "sound_files": {}
+    },
+    "VIDEO_INIT": {
+      "name": "VIDEO_INIT",
+      "sound_files": {}
+    },
+    "ACTIONS": {
+      "name": "ACTIONS",
+      "sound_files": {}
+    },
+    "AMB_PSC": {
+      "name": "AMB_PSC",
+      "sound_files": {}
+    },
+    "AMB_PSV_SPECIFIC": {
+      "name": "AMB_PSV_SPECIFIC",
+      "sound_files": {}
+    },
+    "AMB_PSV_WATER": {
+      "name": "AMB_PSV_WATER",
+      "sound_files": {}
+    },
+    "AMB_PS_DUNGEONS": {
+      "name": "AMB_PS_DUNGEONS",
+      "sound_files": {}
+    },
+    "AMB_PS_FIRE": {
+      "name": "AMB_PS_FIRE",
+      "sound_files": {}
+    },
+    "AMB_PS_FLORA": {
+      "name": "AMB_PS_FLORA",
+      "sound_files": {}
+    },
+    "AMB_PS_METAL": {
+      "name": "AMB_PS_METAL",
+      "sound_files": {}
+    },
+    "AMB_PS_MINERAL": {
+      "name": "AMB_PS_MINERAL",
+      "sound_files": {}
+    },
+    "AMB_PS_OBJ": {
+      "name": "AMB_PS_OBJ",
+      "sound_files": {}
+    },
+    "AMB_PS_SCRIPTED": {
+      "name": "AMB_PS_SCRIPTED",
+      "sound_files": {}
+    },
+    "AMB_PS_SPECIFIC": {
+      "name": "AMB_PS_SPECIFIC",
+      "sound_files": {}
+    },
+    "AMB_PS_VFX": {
+      "name": "AMB_PS_VFX",
+      "sound_files": {}
+    },
+    "AMB_PS_WATER": {
+      "name": "AMB_PS_WATER",
+      "sound_files": {}
+    },
+    "AMB_PS_WILDLIFE": {
+      "name": "AMB_PS_WILDLIFE",
+      "sound_files": {}
+    },
+    "AMB_PS_WIND": {
+      "name": "AMB_PS_WIND",
+      "sound_files": {}
+    },
+    "AMB_PS_WOOD": {
+      "name": "AMB_PS_WOOD",
+      "sound_files": {}
+    },
+    "AMB_PS_WRECKAGE": {
+      "name": "AMB_PS_WRECKAGE",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_Cambion": {
+      "name": "AMB_SV_ACT1_A_Cambion",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_Chapel": {
+      "name": "AMB_SV_ACT1_A_Chapel",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_CrashSite": {
+      "name": "AMB_SV_ACT1_A_CrashSite",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_DenSubs": {
+      "name": "AMB_SV_ACT1_A_DenSubs",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_DruidSubs": {
+      "name": "AMB_SV_ACT1_A_DruidSubs",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_Forest": {
+      "name": "AMB_SV_ACT1_A_Forest",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_GoblinCamp": {
+      "name": "AMB_SV_ACT1_A_GoblinCamp",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_Hag": {
+      "name": "AMB_SV_ACT1_A_Hag",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_OwlbearCave": {
+      "name": "AMB_SV_ACT1_A_OwlbearCave",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_Plains": {
+      "name": "AMB_SV_ACT1_A_Plains",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_RaftScene": {
+      "name": "AMB_SV_ACT1_A_RaftScene",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_RangerCamp": {
+      "name": "AMB_SV_ACT1_A_RangerCamp",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_ShadowLabyrinth": {
+      "name": "AMB_SV_ACT1_A_ShadowLabyrinth",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_Transitions": {
+      "name": "AMB_SV_ACT1_A_Transitions",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_TUT_Avernus": {
+      "name": "AMB_SV_ACT1_A_TUT_Avernus",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_UnderDark": {
+      "name": "AMB_SV_ACT1_A_UnderDark",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_VillageSubs": {
+      "name": "AMB_SV_ACT1_A_VillageSubs",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_ZhentarimBasement": {
+      "name": "AMB_SV_ACT1_A_ZhentarimBasement",
+      "sound_files": {}
+    },
+    "AMB_SV_CAMPFIRE": {
+      "name": "AMB_SV_CAMPFIRE",
+      "sound_files": {}
+    },
+    "AMB_SV_CC": {
+      "name": "AMB_SV_CC",
+      "sound_files": {}
+    },
+    "AMB_SV_DUNGEONS": {
+      "name": "AMB_SV_DUNGEONS",
+      "sound_files": {}
+    },
+    "AMB_SV_INDOORS": {
+      "name": "AMB_SV_INDOORS",
+      "sound_files": {}
+    },
+    "AMB_SV_NATURE": {
+      "name": "AMB_SV_NATURE",
+      "sound_files": {}
+    },
+    "AMB_SV_WALLA": {
+      "name": "AMB_SV_WALLA",
+      "sound_files": {}
+    },
+    "ANIMALS": {
+      "name": "ANIMALS",
+      "sound_files": {}
+    },
+    "CINEMATIC_GLOBAL": {
+      "name": "CINEMATIC_GLOBAL",
+      "sound_files": {}
+    },
+    "CINEMATIC_GOLD_ACT1": {
+      "name": "CINEMATIC_GOLD_ACT1",
+      "sound_files": {}
+    },
+    "CINEMATIC_SILVER_ACT1": {
+      "name": "CINEMATIC_SILVER_ACT1",
+      "sound_files": {}
+    },
+    "CINEMATIC_VIDEO": {
+      "name": "CINEMATIC_VIDEO",
+      "sound_files": {}
+    },
+    "COMBAT": {
+      "name": "COMBAT",
+      "sound_files": {}
+    },
+    "CUSTOM_ANIM_VFX": {
+      "name": "CUSTOM_ANIM_VFX",
+      "sound_files": {}
+    },
+    "DIALOGUES": {
+      "name": "DIALOGUES",
+      "sound_files": {}
+    },
+    "DIALOGUE_AD_SFX": {
+      "name": "DIALOGUE_AD_SFX",
+      "sound_files": {}
+    },
+    "ENGINE": {
+      "name": "ENGINE",
+      "sound_files": {}
+    },
+    "ITEMS_CONTAINERS": {
+      "name": "ITEMS_CONTAINERS",
+      "sound_files": {}
+    },
+    "ITEMS_DOORS": {
+      "name": "ITEMS_DOORS",
+      "sound_files": {}
+    },
+    "ITEMS_GENERIC": {
+      "name": "ITEMS_GENERIC",
+      "sound_files": {}
+    },
+    "ITEMS_INTERACTIVE": {
+      "name": "ITEMS_INTERACTIVE",
+      "sound_files": {}
+    },
+    "ITEMS_OBJECTS": {
+      "name": "ITEMS_OBJECTS",
+      "sound_files": {}
+    },
+    "ITEMS_WEAPONS": {
+      "name": "ITEMS_WEAPONS",
+      "sound_files": {}
+    },
+    "MONSTERS": {
+      "name": "MONSTERS",
+      "sound_files": {}
+    },
+    "MOVEMENT": {
+      "name": "MOVEMENT",
+      "sound_files": {}
+    },
+    "MUSIC": {
+      "name": "MUSIC",
+      "sound_files": {}
+    },
+    "MUSIC_BARD": {
+      "name": "MUSIC_BARD",
+      "sound_files": {}
+    },
+    "MUSIC_CINEMATICS": {
+      "name": "MUSIC_CINEMATICS",
+      "sound_files": {}
+    },
+    "MUSIC_SCRIPTED": {
+      "name": "MUSIC_SCRIPTED",
+      "sound_files": {}
+    },
+    "PHOTO_MODE": {
+      "name": "PHOTO_MODE",
+      "sound_files": {}
+    },
+    "PLATFORMS": {
+      "name": "PLATFORMS",
+      "sound_files": {}
+    },
+    "PLAYER_RACES": {
+      "name": "PLAYER_RACES",
+      "sound_files": {}
+    },
+    "PLAYER_RACES_CINEMATICS": {
+      "name": "PLAYER_RACES_CINEMATICS",
+      "sound_files": {}
+    },
+    "PROJECTILES": {
+      "name": "PROJECTILES",
+      "sound_files": {}
+    },
+    "RUBMLE": {
+      "name": "RUBMLE",
+      "sound_files": {}
+    },
+    "SCRIPTED_EVENTS": {
+      "name": "SCRIPTED_EVENTS",
+      "sound_files": {}
+    },
+    "SPELLINSTRUMENT": {
+      "name": "SPELLINSTRUMENT",
+      "sound_files": {}
+    },
+    "SPELLS": {
+      "name": "SPELLS",
+      "sound_files": {}
+    },
+    "SPELLS_CR": {
+      "name": "SPELLS_CR",
+      "sound_files": {}
+    },
+    "SPELLVOCAL": {
+      "name": "SPELLVOCAL",
+      "sound_files": {}
+    },
+    "STATUS": {
+      "name": "STATUS",
+      "sound_files": {}
+    },
+    "SURFACES": {
+      "name": "SURFACES",
+      "sound_files": {}
+    },
+    "TMP_SOUND": {
+      "name": "TMP_SOUND",
+      "sound_files": {}
+    },
+    "UI": {
+      "name": "UI",
+      "sound_files": {}
+    },
+    "VOCALS": {
+      "name": "VOCALS",
+      "sound_files": {}
+    },
+    "ACTIONS_Dev": {
+      "name": "ACTIONS_Dev",
+      "sound_files": {}
+    },
+    "AMB_PSC_Dev": {
+      "name": "AMB_PSC_Dev",
+      "sound_files": {}
+    },
+    "AMB_PS_SPECIFIC_Dev": {
+      "name": "AMB_PS_SPECIFIC_Dev",
+      "sound_files": {}
+    },
+    "AMB_PS_VFX_Dev": {
+      "name": "AMB_PS_VFX_Dev",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_ShadowLabyrinth_Dev": {
+      "name": "AMB_SV_ACT1_A_ShadowLabyrinth_Dev",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_A_SharTemple": {
+      "name": "AMB_SV_ACT1_A_SharTemple",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT1_B_CRE_Dev": {
+      "name": "AMB_SV_ACT1_B_CRE_Dev",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT2_A_SCL_Battlefield_Dev": {
+      "name": "AMB_SV_ACT2_A_SCL_Battlefield_Dev",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT2_A_SCL_MindflayerColony_Dev": {
+      "name": "AMB_SV_ACT2_A_SCL_MindflayerColony_Dev",
+      "sound_files": {}
+    },
+    "Amb_SV_ACT2_A_SCL_MoonriseTower_Dev": {
+      "name": "Amb_SV_ACT2_A_SCL_MoonriseTower_Dev",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT2_A_SCL_NightSong_Prison": {
+      "name": "AMB_SV_ACT2_A_SCL_NightSong_Prison",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT2_A_SCL_VillageSubs_Dev": {
+      "name": "AMB_SV_ACT2_A_SCL_VillageSubs_Dev",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT2_B_WyrmsCrossing_Dev": {
+      "name": "AMB_SV_ACT2_B_WyrmsCrossing_Dev",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT3_B_BGO": {
+      "name": "AMB_SV_ACT3_B_BGO",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT3_B_CTY": {
+      "name": "AMB_SV_ACT3_B_CTY",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT3_B_END": {
+      "name": "AMB_SV_ACT3_B_END",
+      "sound_files": {}
+    },
+    "AMB_SV_ACT3_B_IRN": {
+      "name": "AMB_SV_ACT3_B_IRN",
+      "sound_files": {}
+    },
+    "AMB_SV_BGO": {
+      "name": "AMB_SV_BGO",
+      "sound_files": {}
+    },
+    "AMB_SV_CAMPFIRE_Dev": {
+      "name": "AMB_SV_CAMPFIRE_Dev",
+      "sound_files": {}
+    },
+    "Amb_SV_Generic": {
+      "name": "Amb_SV_Generic",
+      "sound_files": {}
+    },
+    "AMB_SV_UI": {
+      "name": "AMB_SV_UI",
+      "sound_files": {}
+    },
+    "ANIMALS_Dev": {
+      "name": "ANIMALS_Dev",
+      "sound_files": {}
+    },
+    "CINEMATIC_GLOBAL_Dev": {
+      "name": "CINEMATIC_GLOBAL_Dev",
+      "sound_files": {}
+    },
+    "CINEMATIC_GOLD_ACT2_Dev": {
+      "name": "CINEMATIC_GOLD_ACT2_Dev",
+      "sound_files": {}
+    },
+    "CINEMATIC_GOLD_ACT3_Dev": {
+      "name": "CINEMATIC_GOLD_ACT3_Dev",
+      "sound_files": {}
+    },
+    "CINEMATIC_SILVER_ACT1_Dev": {
+      "name": "CINEMATIC_SILVER_ACT1_Dev",
+      "sound_files": {}
+    },
+    "CINEMATIC_SILVER_ACT2_Dev": {
+      "name": "CINEMATIC_SILVER_ACT2_Dev",
+      "sound_files": {}
+    },
+    "CINEMATIC_SILVER_ACT3_Dev": {
+      "name": "CINEMATIC_SILVER_ACT3_Dev",
+      "sound_files": {}
+    },
+    "CUSTOM_ANIM_VFX_Dev": {
+      "name": "CUSTOM_ANIM_VFX_Dev",
+      "sound_files": {}
+    },
+    "DIALOGUE_AD_SFX_Dev": {
+      "name": "DIALOGUE_AD_SFX_Dev",
+      "sound_files": {}
+    },
+    "ITEMS_DOORS_Dev": {
+      "name": "ITEMS_DOORS_Dev",
+      "sound_files": {}
+    },
+    "ITEMS_INTERACTIVE_Dev": {
+      "name": "ITEMS_INTERACTIVE_Dev",
+      "sound_files": {}
+    },
+    "ITEMS_OBJECTS_Dev": {
+      "name": "ITEMS_OBJECTS_Dev",
+      "sound_files": {}
+    },
+    "MONSTERS_Dev": {
+      "name": "MONSTERS_Dev",
+      "sound_files": {}
+    },
+    "MUSIC_BARD_Dev": {
+      "name": "MUSIC_BARD_Dev",
+      "sound_files": {}
+    },
+    "MUSIC_CINEMATICS_Dev": {
+      "name": "MUSIC_CINEMATICS_Dev",
+      "sound_files": {}
+    },
+    "MUSIC_Dev": {
+      "name": "MUSIC_Dev",
+      "sound_files": {}
+    },
+    "PLATFORMS_Dev": {
+      "name": "PLATFORMS_Dev",
+      "sound_files": {}
+    },
+    "PLAYER_RACES_CINEMATICS_Dev": {
+      "name": "PLAYER_RACES_CINEMATICS_Dev",
+      "sound_files": {}
+    },
+    "PLAYER_RACES_Dev": {
+      "name": "PLAYER_RACES_Dev",
+      "sound_files": {}
+    },
+    "PROJECTILES_Dev": {
+      "name": "PROJECTILES_Dev",
+      "sound_files": {}
+    },
+    "SCRIPTED_EVENTS_Dev": {
+      "name": "SCRIPTED_EVENTS_Dev",
+      "sound_files": {}
+    },
+    "SPELLINSTRUMENT_Dev": {
+      "name": "SPELLINSTRUMENT_Dev",
+      "sound_files": {}
+    },
+    "SPELLS_CR_Dev": {
+      "name": "SPELLS_CR_Dev",
+      "sound_files": {}
+    },
+    "SPELLS_Dev": {
+      "name": "SPELLS_Dev",
+      "sound_files": {}
+    },
+    "SPELLVOCAL_Dev": {
+      "name": "SPELLVOCAL_Dev",
+      "sound_files": {}
+    },
+    "STATUS_Dev": {
+      "name": "STATUS_Dev",
+      "sound_files": {}
+    },
+    "SURFACES_Dev": {
+      "name": "SURFACES_Dev",
+      "sound_files": {}
+    },
+    "TMP_BANK_GEN_TEST": {
+      "name": "TMP_BANK_GEN_TEST",
+      "sound_files": {}
+    },
+    "TMP_SOUND_DEV": {
+      "name": "TMP_SOUND_DEV",
+      "sound_files": {}
+    },
+    "UI_Dev": {
+      "name": "UI_Dev",
+      "sound_files": {}
+    }
+  }
+}

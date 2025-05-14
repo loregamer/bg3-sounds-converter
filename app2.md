@@ -2,15 +2,16 @@
 
 ## Overview
 
-The new `app2.py` will be a streamlined script focused solely on building a comprehensive dictionary of decoded BNK files for easy parsing. Unlike the original GUI application, this will be a command-line tool that extracts and organizes the sound data into a structured JSON format.
+The new `app2.py` is an application focused on building a comprehensive dictionary of decoded BNK files for easy parsing. It is implemented as a GUI tool that extracts and organizes the sound data into a structured JSON format.
 
-## Key Differences from Original `app.py`
+## Key Features
 
-- No GUI components - pure command-line interface
+- User-friendly GUI interface
+- Path configuration storage that remembers locations between sessions
 - Focused only on BNK decoding and dictionary building
 - Outputs structured JSON data instead of organizing files
 - Simplified workflow without audio conversion functionality
-- Command-line arguments for flexibility
+- Multi-threaded processing for better performance
 
 ## Required Dependencies
 
@@ -19,16 +20,18 @@ The new `app2.py` will be a streamlined script focused solely on building a comp
 
 ## Functions and Structure
 
-### 1. Command-Line Interface
+### 1. User Interface
 
-```python
-def main():
-    # Parse command-line arguments:
-    # - Path to UnpackedData
-    # - Output JSON file path (optional)
-    # - Flag to skip adding friendly names
-    # - Option to specify output folder for decoded files
-```
+The app includes a GUI with fields for:
+
+- UnpackedData folder selection
+- Output JSON file path
+- XML output folder (optional)
+- Wwiser.pyz path
+- Thread count for parallel processing
+- Processing options (Shared/SharedDev folders)
+
+All paths are automatically remembered between sessions using the configuration manager.
 
 ### 2. BNK Decoding
 
@@ -88,11 +91,11 @@ The output JSON will have this structure:
 
 ## Usage
 
-The script will be executed from the command line with arguments:
-
-```
-python app2.py --unpacked_data "path/to/UnpackedData" [--output output.json] [--no_wiki_names]
-```
+1. Launch the application with `python app2.py`
+2. Configure the paths (these will be remembered for future sessions)
+3. Select processing options
+4. Click "Start Processing" to begin
+5. Once completed, click "Save Dictionary" to export the JSON file
 
 ## Workflow
 
@@ -110,3 +113,5 @@ python app2.py --unpacked_data "path/to/UnpackedData" [--output output.json] [--
 - Progress tracking with bank count and completion percentage
 - Error handling for missing dependencies and XML parsing issues
 - Support for selective processing (only Shared or only SharedDev)
+- Configuration storage to remember paths between sessions
+- Multi-threaded processing with configurable thread count
